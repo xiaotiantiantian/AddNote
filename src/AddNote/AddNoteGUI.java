@@ -179,17 +179,17 @@ public class AddNoteGUI {
 				// "C:\\Users\\Zhirun Tian\\Desktop\\CUHK Series\\zdx2\\mobi8\\OEBPS\\Text";
 				// //textFilePath.getText().split(".")[0]+"\\mobi8\\OEBPS\\Text";
 				// String DictionaryPath = tempPath;
-				 GetFileList getfl = new GetFileList(newEbook.getParent());
-				 List<File> FileList = getfl.traverseFolder3(newEbook.getParent());
-				
-				
-				 for(File tmp: FileList){
-				 //System.out.println(tmp.getName());
-				 FileModifyLinkSquareBracket tempFile = new
-				 FileModifyLinkSquareBracket(tmp);
-				
-				 tempFile.write(tempFile.read());
-				 }
+				// GetFileList getfl = new GetFileList(DictionaryPath);
+				// List<File> FileList = getfl.getFileList();
+				//
+				//
+				// for(File tmp: FileList){
+				// //System.out.println(tmp.getName());
+				// FileModifyLinkSquareBracket tempFile = new
+				// FileModifyLinkSquareBracket(tmp);
+				//
+				// tempFile.write(tempFile.read());
+				// }
 			}
 		});
 		btnAddnotelink.setBounds(34, 186, 105, 30);
