@@ -1,6 +1,10 @@
 # AddNote
 Add footnote to structured ebooks
 
+=====ver 0.11=====
+1.after unpackage, it could add link automatic
+2.it could traverse all htlm/xhtml files in the ebook
+
 =====ver 0.10=====
 1. add unpackage mobi/azw3
 2. add an icon of main window
