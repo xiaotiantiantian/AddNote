@@ -21,17 +21,17 @@ import java.io.IOException;
  *         by using this class the original format likes <sup>[16-18]</sup> the
  *         original content of note likes
  *         <p class="annotation-text">
- *         [16-18]徐達深主編：《中華人民共和國實錄》第三卷（下）（長春：吉林人民出版社�?994），�?
- *         291�?293�?294-1295�?/p>
+ *         [16-18]徐達深主編：《中華人民共和國實錄》第三卷（下）（長春：吉林人民出版社�?994），�?
+ *         291�?293�?294-1295�?/p>
  *
  *         then I would change it to <sup><a id="footnote-16-18-backlink"
  *         href="part0019.xhtml#footnote-16-18">[16-18]</a></sup>
  *         <p>
  *         <a id="footnote-16-18"
  *         href="part0019.xhtml#footnote-16-18-backlink">[
- *         16-18]</a>徐達深主編：《中�
- *         �人民共和國實錄》第三卷（下）（長春：吉林人民出版社�?994），�
- *         ?291�?293�?294-1295�?/p>
+ *         16-18]</a>徐達深主編：《中�
+ *         �人民共和國實錄》第三卷（下）（長春：吉林人民出版社�?994），�
+ *         ?291�?293�?294-1295�?/p>
  */
 public class FileModifyLinkSquareBracket {
 
@@ -75,6 +75,10 @@ public class FileModifyLinkSquareBracket {
 				if (line.indexOf("class=\"annotation-text\"") < 0) {
 					if (tempLines.length >= 2) {
 						String NewLine = "";
+						//if there is some place have useless "注"
+						//replace it with blank string
+						tempLines[1].replace("注", "");
+						
 						NewLine += tempLines[0] + "<a id=\"footnote-"
 								+ tempLines[1] + "\" href=\"" + file.getName()
 								+ "#footnote-" + tempLines[1] + "-backlink\">["
@@ -89,6 +93,9 @@ public class FileModifyLinkSquareBracket {
 
 					String NewLine = "";
 					for (int i = 0; i < (tempLines.length - tempLines.length % 2); i = i + 2) {
+						//if there is some place have useless "注"
+						//replace it with blank string
+						tempLines[i+1].replace("注", "");
 						NewLine += tempLines[i];
 						NewLine += "<a id=\"footnote-" + tempLines[i + 1]
 								+ "-backlink\" href=\"" + file.getName()
