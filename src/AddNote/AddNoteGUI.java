@@ -51,6 +51,14 @@ public class AddNoteGUI {
 		// set the icon of main window
 		Image image = new Image(Display.getCurrent(), "res/duducat.png");
 		shlAddnote.setImage(image);
+		
+		Button btnHtoV = new Button(shlAddnote, SWT.NONE);
+		btnHtoV.setBounds(358, 199, 101, 30);
+		btnHtoV.setText("横排转直排");
+		
+		Button btnVtoH = new Button(shlAddnote, SWT.NONE);
+		btnVtoH.setText("直排转横排");
+		btnVtoH.setBounds(358, 235, 101, 30);
 
 		shlAddnote.open();
 		shlAddnote.layout();
@@ -86,7 +94,7 @@ public class AddNoteGUI {
 
 			}
 		});
-		btnSelectButton.setBounds(358, 114, 79, 30);
+		btnSelectButton.setBounds(358, 114, 101, 30);
 		btnSelectButton.setText("Select File");
 
 		textFilePath = new Text(shlAddnote, SWT.BORDER);
@@ -102,7 +110,7 @@ public class AddNoteGUI {
 				.setText("Please note: only work with CUHKseries ebook in Amazon.");
 
 		Button btnUnpackEbook = new Button(shlAddnote, SWT.NONE);
-		btnUnpackEbook.setBounds(443, 114, 107, 30);
+		btnUnpackEbook.setBounds(465, 114, 101, 30);
 		btnUnpackEbook.setText("Unpack Ebook");
 
 		textLog = new Text(shlAddnote, SWT.BORDER);
@@ -192,7 +200,7 @@ public class AddNoteGUI {
 				// }
 			}
 		});
-		btnAddnotelink.setBounds(34, 186, 105, 30);
+		btnAddnotelink.setBounds(34, 186, 101, 30);
 		btnAddnotelink.setText("AddNoteLink");
 
 	}
