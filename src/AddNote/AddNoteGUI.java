@@ -81,10 +81,14 @@ public class AddNoteGUI {
 				if (!tempFolderFile.mkdirs()) {
 					System.out.println("创建目标文件所在目录失败！");
 				}
+				
+				//get the file name extension
+				String[] GetFileExt = textFilePath.getText().split("\\.");
+				String FileExt = GetFileExt[GetFileExt.length-1];
 
 				File newEbook = new File(origEbook.getParent()
 						+ "\\temp\\temp."
-						+ textFilePath.getText().split("\\.")[1]);
+						+ FileExt);
 				try {
 					FileOp.nioTransferCopy(origEbook, newEbook);
 				} catch (IOException e1) {
@@ -298,8 +302,8 @@ public class AddNoteGUI {
 						btnUnpackEbook.setText("Unpack Ebook");
 						
 						Label lblAboutAuthor = new Label(shlEbookTool, SWT.NONE);
-						lblAboutAuthor.setBounds(33, 594, 426, 20);
-						lblAboutAuthor.setText("About author:  please contact me by admin@si-you.com");
+						lblAboutAuthor.setBounds(33, 594, 426, 47);
+						lblAboutAuthor.setText("About author:  please contact me by admin@si-you.com\r\nVersion 0.12  Homepage: https://si-you.com/?page_id=2586\r\n");
 
 		shlEbookTool.open();
 		shlEbookTool.layout();
@@ -316,7 +320,7 @@ public class AddNoteGUI {
 	protected void createContents() {
 		shlEbookTool = new Shell();
 		shlEbookTool.setSize(516, 698);
-		shlEbookTool.setText("EbookToolkit");
+		shlEbookTool.setText("Ebook Toolkit");
 
 		Button btnSelectButton = new Button(shlEbookTool, SWT.NONE);
 		btnSelectButton.addMouseListener(new MouseAdapter() {

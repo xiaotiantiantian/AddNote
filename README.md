@@ -1,9 +1,17 @@
 # AddNote(original)->Ebook Tookit
 Add footnote to structured ebooks
 Some undetermind function 
+
+=====ver 0.14=====
+1.fix problem that can not recognize some file extension correctly (if there are more than 1 dot)
+
 =====ver 0.12=====
 1.add function: convert a single mobi/azw3 to a joint mobi, which can be pushed to kindle as azw3 file
 2.optimized the design of main window
+
+=====ver 0.12=====
+add GUI of change the style of book between vertical and horizontal
+
 =====ver 0.11=====
 
 1.after unpackage, it could add link automatic
