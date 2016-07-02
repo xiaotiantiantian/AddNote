@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Display;
@@ -23,6 +24,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class AddNoteGUI {
 
@@ -142,6 +145,10 @@ public class AddNoteGUI {
 				if(!opfFile.exists()){
 					opfFile = new File(newEbook.getParent()+"\\mobi7\\OEBPS\\content.opf");
 				}
+				
+				if(!opfFile.exists()){
+					opfFile = new File(newEbook.getParent()+"\\mobi7\\content.opf");
+				}
 				String shellExecPack = "res//Kindlegen.exe " +" "
 						+"\""+opfFile.getAbsolutePath()+"\"";
 				//String shellExec = "\"C:\\Users\\Zhirun Tian\\Documents\\GitHub\\AddNote\\res\\KindleUnpack.exe\" -r  \"C:\\Users\\Zhirun Tian\\Desktop\\temp\\temp.mobi\" \"C:\\Users\\Zhirun Tian\\Desktop\\temp\"";
@@ -183,7 +190,7 @@ public class AddNoteGUI {
 				//from "orig.mobi/azw3" to "orig_converted.mobi"
 				File FinalJointedEbook = new File(origEbook.getParent()
 						+ "\\"+origEbook.getName().split("\\.")[0]+"_revised.mobi");
-				File ConvertedEbook = new File(newEbook.getParent()+"\\mobi8\\OEBPS\\content.mobi");
+				File ConvertedEbook = new File(opfFile.getParent()+"\\content.mobi");
 				try {
 					FileOp.nioTransferCopy(ConvertedEbook, FinalJointedEbook);
 				} catch (IOException e1) {
@@ -208,71 +215,144 @@ public class AddNoteGUI {
 		tbtmAddNoteLink.setControl(composite_1);
 		
 				Button btnAddnotelink = new Button(composite_1, SWT.NONE);
-				btnAddnotelink.setBounds(73, 55, 101, 30);
+				btnAddnotelink.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+					}
+				});
+				btnAddnotelink.setBounds(70, 37, 101, 30);
 				btnAddnotelink.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseDown(MouseEvent e) {
-						// 1. change the mobi/azw3 file to another name
-						// kindleUnpack could not work with Chinese words
+						//1. 判断是epub/mobi/azw3
 						FileSystemOp FileOp = new FileSystemOp();
 						File origEbook = new File(textFilePath.getText());
-
-						// create parent dir for it is not exist
-
+						
 						String tempFolder = origEbook.getParent()+ "\\temp";
 						File tempFolderFile = new File(tempFolder);
 						if (!tempFolderFile.mkdirs()) {
 							System.out.println("创建目标文件所在目录失败！");
 						}
-
-						File newEbook = new File(origEbook.getParent()
-								+ "\\temp\\temp."
-								+ textFilePath.getText().split("\\.")[1]);
-						try {
-							FileOp.nioTransferCopy(origEbook, newEbook);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						
+						String origName = origEbook.getName();
+						//1.1 set a string variable for the prefix
+						String origPrefix = "";
+						
+						//get the prefix
+						if ((origName != null) && (origName.length() > 0)) {   
+				            int dot = origName.lastIndexOf('.');   
+				            if ((dot >-1) && (dot < (origName.length() - 1))) {   
+				            	 origPrefix = origName.substring(dot + 1);   
+				            }    
+				        }				
+						else origPrefix = origName;
+						
+						//set the path of html files
+						String htmlPath = "";
+						
+						//if the file is epub file, unzip the file to temp folder
+						if(origPrefix.equals("epub")){
+							Unzip unzip = new Unzip();
+							boolean unzipSuccessful = unzip.unzip(origEbook.getAbsolutePath(), origEbook.getParent()+ "\\temp\\");
+				               if (unzipSuccessful) {
+				                    System.out.println("文件解压成功。");
+				                    
+				                    //set the html file path
+				                    htmlPath = origEbook.getParent()+ "\\temp\\OPS\\";
+				                    System.out.println("文件解压失败。");
+				               }
 						}
+						//if the file is mobi or azw3, unzip it by using KindleUnpack
+						else if(origPrefix.equals("mobi")||origPrefix.equals("azw3")){
+							//get the file name extension
+							String[] GetFileExt = textFilePath.getText().split("\\.");
+							String FileExt = GetFileExt[GetFileExt.length-1];
 
-						// use kindleUnpack to unpackage the temp.mobi/azw3
-						String shellExec = "res//KindleUnpack.exe " + "-r" +" "
-								+"\""+newEbook.getAbsolutePath() +"\""+ " "
-								+"\""+ newEbook.getParent()+"\"";
-						//String shellExec = "\"C:\\Users\\Zhirun Tian\\Documents\\GitHub\\AddNote\\res\\KindleUnpack.exe\" -r  \"C:\\Users\\Zhirun Tian\\Desktop\\temp\\temp.mobi\" \"C:\\Users\\Zhirun Tian\\Desktop\\temp\"";
-						try {
-							Process p0 = Runtime.getRuntime().exec(shellExec);
-							// 读取标准输出流
-							BufferedReader bufferedReader = new BufferedReader(
-									new InputStreamReader(p0.getInputStream()));
-							String line;
-							while ((line = bufferedReader.readLine()) != null) {
-								// System.out.println(line);
-								textLog.setText(textLog.getText() + "\r\n" + line);
+							File newEbook = new File(origEbook.getParent()
+									+ "\\temp\\temp."
+									+ FileExt);
+							try {
+								FileOp.nioTransferCopy(origEbook, newEbook);
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
 							}
-							// 读取标准错误流
-							BufferedReader brError = new BufferedReader(
-									new InputStreamReader(p0.getErrorStream(), "gb2312"));
-							String errline = null;
-							while ((errline = brError.readLine()) != null) {
-								System.out.println(errline);
+
+							// use kindleUnpack to unpackage the temp.mobi/azw3
+							String shellExec = "res//KindleUnpack.exe " + "-r" +" "
+									+"\""+newEbook.getAbsolutePath() +"\""+ " "
+									+"\""+ newEbook.getParent()+"\"";
+							//String shellExec = "\"C:\\Users\\Zhirun Tian\\Documents\\GitHub\\AddNote\\res\\KindleUnpack.exe\" -r  \"C:\\Users\\Zhirun Tian\\Desktop\\temp\\temp.mobi\" \"C:\\Users\\Zhirun Tian\\Desktop\\temp\"";
+							try {
+								Process p0 = Runtime.getRuntime().exec(shellExec);
+								// 读取标准输出流
+								BufferedReader bufferedReader = new BufferedReader(
+										new InputStreamReader(p0.getInputStream()));
+								String line;
+								while ((line = bufferedReader.readLine()) != null) {
+									// System.out.println(line);
+									//textLog.setText(textLog.getText() + "\r\n" + line);
+									textLog.setText(textLog.getText() + line + "\r\n");
+								}
+								// 读取标准错误流
+								BufferedReader brError = new BufferedReader(
+										new InputStreamReader(p0.getErrorStream(), "gb2312"));
+								String errline = null;
+								while ((errline = brError.readLine()) != null) {
+									System.out.println(errline);
+								}
+								// waitFor()判断Process进程是否终止，通过返回值判断是否正常终止。0代表正常终止
+								int c = p0.waitFor();
+								if (c != 0) {
+									System.out.println("失败！");
+								}
+							} catch (IOException e1) {
+								System.out.println("失败！");	
+							} catch (InterruptedException e1) {
+								System.out.println("失败！");
 							}
-							// waitFor()判断Process进程是否终止，通过返回值判断是否正常终止。0代表正常终止
-							int c = p0.waitFor();
-							if (c != 0) {
-								// baseRes.put("desc", "软件升级失败：执行zxvf.sh异常终止");
-								// baseRes.setReturnFlag(false);
-								// return baseRes;
+							
+							//set the html file path
+							htmlPath = newEbook.getParent()+"\\mobi8\\OEBPS\\";
+							File htmlFoldier = new File(htmlPath);
+							if(!htmlFoldier.exists()){
+								htmlFoldier = new File(newEbook.getParent()+"\\mobi7\\OEBPS\\");
+								htmlPath = newEbook.getParent()+"\\mobi7\\OEBPS\\";
 							}
-						} catch (IOException e1) {
-							// baseRes.put("desc", "软件升级失败：文件解压失败");
-							// baseRes.setReturnFlag(false);
-							// return baseRes;
-						} catch (InterruptedException e1) {
-							// baseRes.put("desc", "软件升级失败：文件解压失败");
-							// baseRes.setReturnFlag(false);
-							// return baseRes;
+							
+							if(!htmlFoldier.exists()){
+								htmlFoldier = new File(newEbook.getParent()+"\\mobi7\\content.opf");
+								htmlPath = newEbook.getParent()+"\\mobi7\\";
+							}
 						}
+						//part below is for read the html file list from html path
+						GetFileList fileObj = new GetFileList();
+						List<File> FileList= new ArrayList<File>();
+						FileList = fileObj.traverseFolder2(htmlPath);
+						
+						List<File> htmlFileList= new ArrayList<File>();
+						for(File htmlFile: FileList){
+							if(htmlFile.getName().endsWith("html")){
+								//make the htmlFileList only have htmlfile, but the class now is not used
+								//this class is used for future 封装
+								htmlFileList.add(htmlFile);
+								System.out.println(htmlFile.getName());
+								
+								//add note link to the html files
+//								FileModifyLinkSquareBracket modObj = new FileModifyLinkSquareBracket(htmlFile);
+//								String tmp =  modObj.read();
+//								modObj.write(tmp);
+							}
+						}
+						
+						//add note link to the html files
+						String regex = "【|】";
+						FileModifyLinkSquareBracket modObj = new FileModifyLinkSquareBracket(htmlFileList,regex);
+						String tmp =  modObj.read();
+						modObj.write(tmp);
+						
+						
+						
 					}
 				});
 				btnAddnotelink.setText("AddNoteLink");
@@ -303,7 +383,7 @@ public class AddNoteGUI {
 						
 						Label lblAboutAuthor = new Label(shlEbookTool, SWT.NONE);
 						lblAboutAuthor.setBounds(33, 594, 426, 47);
-						lblAboutAuthor.setText("About author:  please contact me by admin@si-you.com\r\nVersion 0.12  Homepage: https://si-you.com/?page_id=2586\r\n");
+						lblAboutAuthor.setText("About author:  please contact me by admin@si-you.com\r\nVersion 0.16  Homepage: https://si-you.com/?page_id=2586\r\n");
 
 		shlEbookTool.open();
 		shlEbookTool.layout();
